@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Externado Move - PROTOTIPO FUNCIONAL</title>
+    <title>Externado Move - Reportes y Rutas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Tokens de Diseño JunkFood UI adaptados a Seguridad */
         :root {
-            --ketchup-red: #D32F2F;      /* Alerta Crítica / Emergencia */
-            --mustard-yellow: #FFC107;   /* Visibilidad / Caravanas */
-            --deep-fry-gold: #FFA000;    /* Destacados / Rutas */
-            --paper-bag: #D7CCC8;       /* Neutralidad / Información */
-            --grease-spot: #3E2723;      /* Contraste / Texto */
-            --napkin-white: #F5F5F5;     /* Limpieza Visual */
-            --success-pickle: #4CAF50;   /* Ruta Despejada */
+            --ketchup-red: #D32F2F;
+            --mustard-yellow: #FFC107;
+            --deep-fry-gold: #FFA000;
+            --paper-bag: #D7CCC8;
+            --grease-spot: #3E2723;
+            --napkin-white: #F5F5F5;
+            --success-pickle: #4CAF50;
+            --alert-orange: #FF9800;
         }
 
         body {
@@ -29,7 +29,6 @@
             font-family: 'Bungee', cursive;
         }
 
-        /* Token: Primary Button */
         .btn-move {
             background-color: var(--ketchup-red);
             color: white;
@@ -51,7 +50,6 @@
             box-shadow: 0 8px 0px #B47100;
         }
 
-        /* Token: Card Container */
         .move-card {
             background-color: white;
             border: 4px solid var(--paper-bag);
@@ -69,54 +67,65 @@
         .hero-safety {
             background: linear-gradient(135deg, var(--grease-spot) 0%, #1a100e 100%);
             color: white;
-            padding: 100px 20px;
+            padding: 80px 20px;
             text-align: center;
             border-bottom: 10px solid var(--mustard-yellow);
+        }
+
+        .map-container {
             position: relative;
+            background-color: #f0f0f0;
+            border: 6px solid var(--grease-spot);
+            border-radius: 30px;
+            height: 400px;
             overflow: hidden;
+            background-image: radial-gradient(#ccc 1px, transparent 1px);
+            background-size: 30px 30px;
         }
 
-        /* Animación de pulso para el estado "En vivo" */
-        .live-pulse {
-            width: 12px;
-            height: 12px;
-            background: var(--success-pickle);
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
-            box-shadow: 0 0 0 rgba(76, 175, 80, 0.4);
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0px rgba(76, 175, 80, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
-            100% { box-shadow: 0 0 0 0px rgba(76, 175, 80, 0); }
-        }
-
-        .timeline-step {
-            border-left: 4px dashed var(--paper-bag);
-            padding-left: 20px;
-            position: relative;
-            padding-bottom: 20px;
-        }
-
-        .timeline-step::before {
-            content: '';
+        .map-point {
             position: absolute;
-            left: -11px;
-            top: 0;
-            width: 18px;
-            height: 18px;
-            background: var(--mustard-yellow);
+            width: 24px;
+            height: 24px;
+            background: var(--ketchup-red);
             border-radius: 50%;
-            border: 3px solid white;
+            border: 4px solid white;
+            cursor: pointer;
+            transition: transform 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* Estilos para las notificaciones simuladas */
+        .map-point.origin { background: var(--success-pickle); }
+        .map-point.alert { 
+            background: var(--alert-orange); 
+            animation: alert-ping 1s infinite;
+        }
+
+        @keyframes alert-ping {
+            0% { transform: scale(1); box-shadow: 0 0 0 0px rgba(255, 152, 0, 0.7); }
+            100% { transform: scale(1.2); box-shadow: 0 0 0 15px rgba(255, 152, 0, 0); }
+        }
+
+        .map-label {
+            position: absolute;
+            background: var(--grease-spot);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
         #notification-host {
             position: fixed;
-            top: 80px;
+            top: 20px;
             right: 20px;
             z-index: 9999;
         }
@@ -127,276 +136,237 @@
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            font-size: 12px;
-            color: var(--grease-spot);
-            width: 250px;
-            opacity: 0;
-            transform: translateX(100px);
-            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 280px;
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        .toast.show {
-            opacity: 1;
-            transform: translateX(0);
+        .toast.show { transform: translateX(0); }
+
+        .report-feed {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
         }
 
-        .toast-title {
-            font-weight: 900;
-            font-family: 'Bungee', cursive;
-            text-transform: uppercase;
-            color: var(--ketchup-red);
-            margin-bottom: 5px;
+        .report-item {
+            border-left: 5px solid var(--alert-orange);
+            background: #fff8f0;
+            padding: 12px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 12px;
         }
 
-        /* Overlay para el SOS */
         #sos-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(211, 47, 47, 0.95);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(211, 47, 47, 0.98);
             color: white;
             z-index: 10000;
-            display: flex;
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            display: none;
+            text-align: center;
         }
-
-        /* Animación para el SOS */
-        @keyframes sos-blink {
-            0% { background: rgba(211, 47, 47, 0.95); }
-            50% { background: rgba(0, 0, 0, 0.9); }
-            100% { background: rgba(211, 47, 47, 0.95); }
-        }
-
-        .sos-active {
-            animation: sos-blink 0.5s infinite;
-        }
-
     </style>
 </head>
 <body>
 
     <div id="notification-host"></div>
 
+    <!-- SOS Overlay -->
     <div id="sos-overlay">
-        <div class="text-[120px] mb-8 bungee">⚠️ SOS</div>
-        <div class="text-3xl font-black mb-12">ALERTA ENVIADA A CONTACTOS</div>
-        <button id="sos-cancel" class="bg-white text-ketchup px-12 py-5 rounded-full font-black text-2xl hover:bg-paper-bag transition-all">CANCELAR</button>
+        <div class="text-9xl mb-8 bungee">⚠️ SOS</div>
+        <div class="text-4xl font-black mb-4 uppercase">Protocolo Crítico Activado</div>
+        <p class="text-xl mb-12 max-w-lg">Seguridad de la Universidad y Policía del cuadrante han sido notificados.</p>
+        <button id="sos-cancel" class="bg-white text-ketchup px-16 py-6 rounded-full font-black text-3xl shadow-2xl">DETENER ALERTA</button>
     </div>
 
-    <nav class="p-4 flex justify-between items-center bg-white border-b-4 border-ketchup sticky top-0 z-50 shadow-md">
-        <div class="text-xl font-bold text-ketchup flex items-center gap-2">
-            <span class="text-3xl">🤝</span> <span class="bungee">EXTERNADO MOVE</span>
+    <!-- Nav -->
+    <nav class="p-4 flex justify-between items-center bg-white border-b-4 border-ketchup sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <span class="text-3xl">🤝</span> 
+            <span class="bungee text-ketchup text-xl tracking-tighter">EXTERNADO MOVE</span>
         </div>
-        <div class="hidden md:flex gap-6 font-bold text-[10px] tracking-widest uppercase">
-            <a href="#caravanas" class="hover:text-ketchup">Caravanas</a>
-            <a href="#reportes" class="hover:text-ketchup">Ojo en el Camino</a>
-            <a href="#" class="hover:text-ketchup">Comunidad</a>
+        <div class="flex gap-4">
+            <button id="sos-btn" class="bg-ketchup text-white px-5 py-2 rounded-xl font-black text-sm shadow-lg active:scale-95 transition-all">🆘 SOS</button>
         </div>
-        <button id="sos-btn" class="bg-ketchup text-white px-4 py-2 rounded-xl font-black text-[10px] shadow-lg animate-bounce">🆘 SOS PÁNICO</button>
     </nav>
 
+    <!-- Header -->
     <header class="hero-safety">
-        <div class="max-w-4xl mx-auto">
-            <h1 class="text-5xl md:text-7xl mb-6 drop-shadow-lg">NADIE CAMINA SOLO</h1>
-            <p class="text-xl md:text-2xl font-bold mb-10 text-mustard-yellow italic">Acompañamiento en tiempo real para la comunidad del cerro.</p>
-            <div class="flex flex-wrap justify-center gap-6">
-                <button class="btn-move" onclick="simulateNewCaravana()">CREAR MI GRUPO</button>
-                <a href="#caravanas" class="bg-white text-grease-spot px-8 py-4 rounded-xl font-black hover:bg-paper-bag transition-all shadow-xl bungee text-xs flex items-center">UNIRSE A UNA RUTA</a>
-            </div>
+        <h1 class="text-5xl md:text-7xl mb-4">SEGURIDAD COLECTIVA</h1>
+        <p class="text-xl font-bold mb-10 text-mustard-yellow uppercase">Reporta. Camina. Cuida.</p>
+        <div class="flex flex-wrap justify-center gap-4">
+            <a href="#reportes" class="bg-alert-orange text-white px-8 py-4 rounded-xl font-black shadow-xl bungee text-xs flex items-center">🚨 Reportar Incidente</a>
+            <a href="#caravanas" class="btn-move">Ver Caravanas</a>
         </div>
     </header>
 
-    <section id="caravanas" class="max-w-[1200px] mx-auto py-12 px-6">
-        <div class="flex items-center justify-between mb-8">
-            <h2 class="text-2xl bungee">GRUPOS ACTIVOS (4)</h2>
-            <div class="flex items-center bg-white px-4 py-2 rounded-full border-2 border-paper-bag shadow-sm">
-                <span class="live-pulse"></span>
-                <span id="active-count" class="text-xs font-bold uppercase">12 Estudiantes Conectados</span>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            <div id="caravana-list" class="lg:col-span-2 space-y-6">
+    <!-- Radar y Feed de Reportes -->
+    <section id="reportes" class="max-w-[1200px] mx-auto py-16 px-6 grid grid-cols-1 lg:grid-cols-3 gap-12">
+        
+        <!-- Radar Visual -->
+        <div class="lg:col-span-2">
+            <h2 class="text-3xl bungee mb-6">RADAR DE INCIDENCIAS</h2>
+            <div class="map-container">
+                <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/graphy.png')]"></div>
                 
-                <div class="move-card">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <span class="bg-mustard-yellow text-[10px] font-black px-2 py-1 rounded mb-2 inline-block">RUTA: AGUAS ➔ BLOQUE A</span>
-                            <h3 class="text-xl">Caravana "Los Madrugadores"</h3>
-                        </div>
-                        <div class="text-right">
-                            <span id="capacity-1" class="text-2xl font-black text-ketchup">5/10</span>
-                            <p class="text-[10px] font-bold text-gray-400">LUGARES</p>
-                        </div>
-                    </div>
-                    
-                    <div class="space-y-4 mb-6">
-                        <div class="timeline-step">
-                            <p class="text-xs font-bold">Punto de encuentro: Salida Transmilenio</p>
-                            <p class="text-[10px] text-gray-400">Hora de salida: 06:45 AM</p>
-                        </div>
-                        <div class="timeline-step" style="border-left-color: transparent;">
-                            <p class="text-xs font-bold">Destino: Recepción Bloque A</p>
-                        </div>
-                    </div>
-                    
-                    <button class="w-full py-3 bg-grease-spot text-white font-bold rounded-xl hover:bg-ketchup transition-all" onclick="joinCaravana(1, 5, 10)">RESERVAR MI CUPO</button>
+                <!-- Origen -->
+                <div class="map-point origin" style="top: 20%; left: 80%;">
+                    <span class="map-label">ENTRADA U</span>
                 </div>
 
-                <div class="move-card">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <span class="bg-ketchup-red text-white text-[10px] font-black px-2 py-1 rounded mb-2 inline-block">RUTA: BLOQUE G ➔ EJE AMBIENTAL</span>
-                            <h3 class="text-xl">Caravana Nocturna "Post-Clase"</h3>
-                        </div>
-                        <div class="text-right">
-                            <span id="capacity-2" class="text-2xl font-black text-ketchup">8/15</span>
-                            <p class="text-[10px] font-bold text-gray-400">LUGARES</p>
-                        </div>
-                    </div>
-                    <button class="w-full py-3 bg-grease-spot text-white font-bold rounded-xl hover:bg-ketchup transition-all" onclick="joinCaravana(2, 8, 15)">RESERVAR MI CUPO</button>
+                <!-- Alerta: Hombre Sospechoso -->
+                <div class="map-point alert" style="top: 55%; left: 45%;" onclick="showNotification('ALERTA', 'Hombre sospechoso reportado en Calle 12.')">
+                    <span class="map-label">AVISTAMIENTO</span>
                 </div>
 
+                <!-- Destinos -->
+                <div class="map-point" style="top: 85%; left: 20%;"><span class="map-label">SAN VICTORINO</span></div>
+                <div class="map-point" style="top: 45%; left: 55%;"><span class="map-label">LAS AGUAS</span></div>
+
+                <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-20">
+                    <path d="M 80% 20% L 55% 45% L 20% 85%" fill="none" stroke="var(--grease-spot)" stroke-width="2" stroke-dasharray="5"/>
+                </svg>
             </div>
+        </div>
 
-            <div id="reportes" class="space-y-6">
-                <h2 class="text-2xl bungee">OJO EN EL CAMINO</h2>
-                <div class="bg-white border-4 border-ketchup rounded-3xl p-6 shadow-xl">
-                    <h4 class="text-ketchup font-black text-sm mb-4">AVISTAMIENTOS RECIENTES</h4>
-                    <div id="report-list" class="space-y-4">
-                        <div class="p-3 bg-red-50 rounded-xl border border-red-100">
-                            <p class="text-xs font-bold">⚠️ Sujeto sospechoso</p>
-                            <p class="text-[10px] text-gray-600">Calle 12 con 3ra. Reportado hace 5 min.</p>
-                        </div>
-                        <div class="p-3 bg-yellow-50 rounded-xl border border-yellow-100">
-                            <p class="text-xs font-bold">💡 Luminaria fundida</p>
-                            <p class="text-[10px] text-gray-600">Sendero al Bloque I. Tengan precaución.</p>
-                        </div>
+        <!-- Feed de Alertas -->
+        <div>
+            <h2 class="text-3xl bungee mb-6">AVISTAMIENTOS</h2>
+            <div class="report-feed" id="report-list">
+                <!-- Reporte 1 -->
+                <div class="report-item">
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="bg-orange-500 text-white text-[8px] font-black px-2 py-0.5 rounded uppercase">Persona Sospechosa</span>
+                        <span class="text-[9px] font-bold text-gray-400">HACE 5 MIN</span>
                     </div>
-                    <button class="w-full mt-6 py-2 border-2 border-ketchup text-ketchup font-bold rounded-lg text-xs hover:bg-ketchup hover:text-white transition-all" onclick="simulateNewReport()">REPORTAR AHORA</button>
+                    <p class="text-xs font-bold italic">"Hombre con chaqueta oscura merodeando en la esquina de la Calle 12 con 4ta."</p>
                 </div>
 
-                <div class="bg-mustard-yellow p-6 rounded-3xl text-center shadow-lg">
-                    <div class="text-4xl mb-2">🍟</div>
-                    <h4 class="font-black text-xs mb-2">TIP: "EL COMBO SEGURO"</h4>
-                    <p class="text-[10px] font-bold opacity-80 uppercase leading-tight">No uses audífonos con cancelación de ruido mientras caminas por La Candelaria.</p>
+                <!-- Reporte 2 -->
+                <div class="report-item" style="border-left-color: var(--grease-spot); background: #f0f0f0;">
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="bg-gray-700 text-white text-[8px] font-black px-2 py-0.5 rounded uppercase">Zona Oscura</span>
+                        <span class="text-[9px] font-bold text-gray-400">HACE 20 MIN</span>
+                    </div>
+                    <p class="text-xs font-bold italic">"Luminaria fundida cerca al chorro de Quevedo. Eviten pasar solos."</p>
+                </div>
+
+                <!-- Reporte 3 -->
+                <div class="report-item" style="border-left-color: var(--success-pickle); background: #f0fff0;">
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="bg-green-600 text-white text-[8px] font-black px-2 py-0.5 rounded uppercase">Presencia Policial</span>
+                        <span class="text-[9px] font-bold text-gray-400">HACE 32 MIN</span>
+                    </div>
+                    <p class="text-xs font-bold italic">"Patrulla motorizada estacionada frente a la estación Las Aguas."</p>
                 </div>
             </div>
+            
+            <button onclick="addNewReport()" class="w-full mt-4 py-4 border-4 border-dashed border-paper-bag rounded-2xl text-[10px] font-black uppercase hover:border-ketchup transition-colors">
+                + Crear Reporte Nuevo
+            </button>
         </div>
     </section>
 
-    <section class="bg-paper-bag py-16 px-6 text-center">
-        <div class="max-w-2xl mx-auto">
-            <p class="text-2xl font-bold italic text-grease-spot mb-6">"Desde que uso Externado Move, ya no me da miedo ver clases hasta las 9:00 PM. Siempre hay alguien con quien bajar."</p>
-            <span class="bungee text-ketchup text-sm">- Laura, Facultad de Derecho</span>
+    <!-- Seccion de Caravanas (Rutas solicitadas) -->
+    <section id="caravanas" class="max-w-[1200px] mx-auto py-12 px-6">
+        <h2 class="text-4xl bungee mb-10 text-center">Rutas Disponibles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <!-- RUTA AGUAS -->
+            <div class="move-card">
+                <div class="bg-mustard-yellow text-[10px] font-black p-1 text-center rounded-t-lg mb-4">ESTACIÓN LAS AGUAS</div>
+                <h3 class="text-xl">Entrada U ➔ Aguas</h3>
+                <p class="text-[10px] text-gray-500 font-bold mb-6">SALIDA: 01:15 PM | Punto: Puerta Principal</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-2xl font-black" id="cap-1">9/15</span>
+                    <button onclick="join(1, 9, 15)" class="bg-ketchup text-white px-6 py-2 rounded-xl font-black text-xs">UNIRSE</button>
+                </div>
+            </div>
+
+            <!-- RUTA JIMENEZ -->
+            <div class="move-card">
+                <div class="bg-deep-fry-gold text-white text-[10px] font-black p-1 text-center rounded-t-lg mb-4">AV. JIMÉNEZ</div>
+                <h3 class="text-xl">Entrada U ➔ Jimenez</h3>
+                <p class="text-[10px] text-gray-500 font-bold mb-6">SALIDA: 02:00 PM | Punto: Puerta Principal</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-2xl font-black" id="cap-2">5/10</span>
+                    <button onclick="join(2, 5, 10)" class="bg-ketchup text-white px-6 py-2 rounded-xl font-black text-xs">UNIRSE</button>
+                </div>
+            </div>
+
+            <!-- RUTA VICTORINO -->
+            <div class="move-card">
+                <div class="bg-grease-spot text-white text-[10px] font-black p-1 text-center rounded-t-lg mb-4">SAN VICTORINO</div>
+                <h3 class="text-xl">Entrada U ➔ Victorino</h3>
+                <p class="text-[10px] text-gray-500 font-bold mb-6">SALIDA: 05:30 PM | Punto: Puerta Principal</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-2xl font-black" id="cap-3">12/20</span>
+                    <button onclick="join(3, 12, 20)" class="bg-ketchup text-white px-6 py-2 rounded-xl font-black text-xs">UNIRSE</button>
+                </div>
+            </div>
+
         </div>
     </section>
 
-    <footer class="bg-grease-spot text-white py-12 px-6">
-        <div class="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-            <div class="bungee text-2xl text-mustard-yellow">
-                EXTERNADO MOVE
-            </div>
-            <div class="text-[10px] text-paper-bag uppercase tracking-widest text-center opacity-70 leading-relaxed">
-                Seguridad Colectiva • Universidad Externado de Colombia • Proyecto Académico • 2024
-            </div>
-            <div class="flex gap-4">
-                <div class="w-10 h-10 bg-ketchup rounded-full flex items-center justify-center cursor-pointer shadow-md">🆘</div>
-                <div class="w-10 h-10 bg-mustard-yellow rounded-full flex items-center justify-center cursor-pointer text-black shadow-md">🗺️</div>
-            </div>
-        </div>
+    <footer class="bg-grease-spot text-white p-12 text-center border-t-8 border-ketchup">
+        <p class="bungee text-2xl">EXTERNADO MOVE</p>
+        <p class="text-[10px] opacity-40 uppercase tracking-widest mt-2 tracking-[10px]">Cuidarnos es tarea de todos</p>
     </footer>
 
     <script>
-        // Funciones para simulaciones visuales
-        
-        // 1. Mostrar notificaciones rápidas (Toasts)
-        function showNotification(title, message, type = 'default') {
+        function showNotification(title, msg) {
             const host = document.getElementById('notification-host');
             const toast = document.createElement('div');
             toast.className = 'toast';
-            
-            let titleColor = 'var(--ketchup-red)';
-            let borderColor = 'var(--ketchup-red)';
-            
-            if (type === 'success') {
-                titleColor = 'var(--success-pickle)';
-                borderColor = 'var(--success-pickle)';
-            }
-            
-            toast.style.borderColor = borderColor;
-            
-            toast.innerHTML = `
-                <div class="toast-title" style="color: ${titleColor}">${title}</div>
-                <div>${message}</div>
-            `;
-            
+            toast.innerHTML = <div class="bungee text-xs mb-1 text-ketchup">${title}</div><div class="text-[10px] font-bold text-gray-600 uppercase">${msg}</div>;
             host.appendChild(toast);
-            
-            // Forzar reflow para la animación
-            toast.offsetHeight;
-            toast.classList.add('show');
-            
-            // Eliminar después de 4 segundos
+            setTimeout(() => toast.classList.add('show'), 100);
             setTimeout(() => {
                 toast.classList.remove('show');
-                setTimeout(() => {
-                    toast.remove();
-                }, 300);
-            }, 4000);
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
         }
 
-        // 2. Simular unirse a una caravana
-        function joinCaravana(id, current, max) {
-            const capSpan = document.getElementById(`capacity-${id}`);
-            const newCurrent = current + 1;
-            
-            if (newCurrent <= max) {
-                capSpan.innerText = `${newCurrent}/${max}`;
-                showNotification("🎉 ¡INSCRITO!", `Te has unido a la caravana. Te esperamos en el punto de encuentro.`, 'success');
-                
-                // Actualizar contador total
-                const totalCountSpan = document.getElementById('active-count');
-                const totalCount = parseInt(totalCountSpan.innerText.split(' ')[0]) + 1;
-                totalCountSpan.innerText = `${totalCount} Estudiantes Conectados`;
-            } else {
-                showNotification("💥 ERROR", `Esta caravana ya está llena.`);
+        function join(id, curr, max) {
+            const el = document.getElementById(cap-${id});
+            if (curr < max) {
+                el.innerText = ${curr + 1}/${max};
+                showNotification("LISTO", "Te has unido a la ruta. ¡Nos vemos en la entrada!");
             }
         }
 
-        // 3. Simular reporte de seguridad
-        function simulateNewReport() {
-            showNotification("🔍 REPORTE RECIBIDO", "Tu reporte ha sido verificado y ya es visible para otros estudiantes.");
+        function addNewReport() {
+            const list = document.getElementById('report-list');
+            const item = document.createElement('div');
+            item.className = 'report-item';
+            item.innerHTML = `
+                <div class="flex justify-between items-start mb-1">
+                    <span class="bg-orange-500 text-white text-[8px] font-black px-2 py-0.5 rounded uppercase">Nuevo Reporte</span>
+                    <span class="text-[9px] font-bold text-gray-400">AHORA MISMO</span>
+                </div>
+                <p class="text-xs font-bold italic">"Se reporta actividad inusual en el callejón. Precaución."</p>
+            `;
+            list.prepend(item);
+            showNotification("ENVIADO", "Tu reporte ha sido publicado para la comunidad.");
         }
 
-        // 4. Simular nueva caravana
-        function simulateNewCaravana() {
-            showNotification("🚀 GRUPO CREADO", "Tu caravana está activa. Los demás usuarios ya pueden ver tu ruta y unirse.");
-        }
-
-        // 5. Simulación de Pánico SOS
         const sosBtn = document.getElementById('sos-btn');
         const sosOverlay = document.getElementById('sos-overlay');
         const sosCancel = document.getElementById('sos-cancel');
 
-        sosBtn.addEventListener('click', () => {
+        sosBtn.onclick = () => {
             sosOverlay.style.display = 'flex';
-            sosOverlay.classList.add('sos-active');
-        });
+        };
 
-        sosCancel.addEventListener('click', () => {
+        sosCancel.onclick = () => {
             sosOverlay.style.display = 'none';
-            sosOverlay.classList.remove('sos-active');
-            showNotification("✅ ALERTA CANCELADA", "La alerta SOS ha sido desactivada. Tus contactos han sido notificados.");
-        });
-
+            showNotification("CANCELADO", "Alerta desactivada.");
+        };
     </script>
 </body>
 </html>
