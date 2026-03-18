@@ -355,19 +355,19 @@
 
         // 2. Simular unirse a una caravana
         function joinCaravana(id, current, max) {
-            const capSpan = document.getElementById(capacity-${id});
+            const capSpan = document.getElementById(`capacity-${id}`);
             const newCurrent = current + 1;
             
             if (newCurrent <= max) {
-                capSpan.innerText = ${newCurrent}/${max};
-                showNotification("🎉 ¡INSCRITO!", Te has unido a la caravana. Te esperamos en el punto de encuentro., 'success');
+                capSpan.innerText = `${newCurrent}/${max}`;
+                showNotification("🎉 ¡INSCRITO!", `Te has unido a la caravana. Te esperamos en el punto de encuentro.`, 'success');
                 
                 // Actualizar contador total
                 const totalCountSpan = document.getElementById('active-count');
                 const totalCount = parseInt(totalCountSpan.innerText.split(' ')[0]) + 1;
-                totalCountSpan.innerText = ${totalCount} Estudiantes Conectados;
+                totalCountSpan.innerText = `${totalCount} Estudiantes Conectados`;
             } else {
-                showNotification("💥 ERROR", Esta caravana ya está llena.);
+                showNotification("💥 ERROR", `Esta caravana ya está llena.`);
             }
         }
 
